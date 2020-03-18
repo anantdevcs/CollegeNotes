@@ -19,10 +19,11 @@ import uuid
 @app.route('/')
 
 def index():
-    feed_obj_arr = db.execute('SELECT * from filesref ').fetchmany(10)
-
-    return render_template('homepage.html',feed_obj_arr = feed_obj_arr)
-
+    feed_obj_arr = db.execute('SELECT * from filesref order by created_at DESC').fetchmany(10)
+    if  "user" in session:
+        return render_template('homepage.html',feed_obj_arr = feed_obj_arr,userid = session['user'])
+    else:
+        return render_template('homepage.html',feed_obj_arr = feed_obj_arr)
 
 @app.route("/login",methods=['GET', 'POST'])
 
@@ -84,21 +85,48 @@ def upload():
         db.commit()                   
         print("Success")
     if "user" not in session:
-        return render_template('login', error_msg = "Login to Upload files")
+        return render_template('login.html', error_msg = "Login to Upload files")
     else:
 
         # file = request.files['file']
         # file.save(os.path.join(app.config['UPLOAD_FOLDER'], "##!!@@!!12qq"))
         # print("Success")
-        return render_template('upload.html')
+        return render_template('upload.html', userid = session['user'])
 
   
 @app.route('/download/<filename>')
 def download(filename):
 
     return send_file(filename,attachment_filename=filename)
-    
 
+
+@app.route('/delete/<unique_file>')
+
+def delete(unique_file):
+    if (db.execute('SELECT * from filesref where unique_filename = :unique_file AND user_id = :user_id',{"unique_file":unique_file, "user_id":session['user']}).fetchall()) is  None:
+        return render_template('login.html', error_msg = "Login to Perform Action :X")
+    if  'user' in session :#and db.execute('SELECT * from filesref where unique_filename = :unique_file',{"unique_file":unique_file}).fetchone()['user_id'] == session['user']:
+        db.execute('DELETE from filesref where unique_filename = :unique_file AND user_id = :user_id', {'unique_file':unique_file, "user_id":session['user']})
+        try:
+            os.remove(unique_file)
+        except :
+            print("COunld not delete file")
+        db.commit()
+        return redirect('/')
+    else:
+        return render_template('login.html', error_msg = "Login to Perform Action")
+
+@app.route('/dashboard')
+
+def dashboard():
+    if "user" in session  :
+
+        user_name = session['user']
+        uploads = db.execute('SELECT * from filesref WHERE user_id = :user_id',{'user_id' : user_name} ).fetchall()
+
+        return render_template('dashboard.html',uploads = uploads)
+    else:
+        return render_template('login.html', error_msg = "Login to Perform Action")
 
 if __name__ == '__main__':
 

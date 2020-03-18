@@ -14,6 +14,9 @@
       
 
     <ul class="nav justify-content-end">
+      <li class="nav-item">
+        <a class="nav-link active" href="/">Home</a>
+      </li>
         <li class="nav-item">
           <a class="nav-link active" href="/login">Login</a>
         </li>
@@ -25,7 +28,7 @@
         </li>
         {%if userid%}
         <li class="nav-item">
-            <a class="nav-link" href="/personal">{{userid}} Files</a>
+            <a class="nav-link" href="/dashboard">{{userid}} Files</a>
           </li>
 
           <li class="nav-item">
