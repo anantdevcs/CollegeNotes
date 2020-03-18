@@ -11,35 +11,49 @@
     <title>Hello, world!</title>
   </head>
   <body>
+      
+
     <ul class="nav justify-content-end">
         <li class="nav-item">
           <a class="nav-link active" href="/login">Login</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="signup">Signup</a>
+          <a class="nav-link" href="/signup">Signup</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#share">Share</a>
         </li>
-       
+        {%if userid%}
+        <li class="nav-item">
+            <a class="nav-link" href="/personal">{{userid}} Files</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="/upload">Uplaod Notes</a>
+          </li>
+        {%endif%}
       </ul>
-      <h1>LOGIN</h1>
-      {% if error_msg  %}
-      <div class="alert alert-danger">
-         {{error_msg}}
-      </div>
-      {%endif%}
-      <form action="/login" method="POST">
-        <div class="form-group">
-            <label for="usr">User ID</label>
-            <input type="text" class="form-control" id="usr" name = "user_id">
+      <div class="card">
+        <div class="card-body">
+          <h2>Notes Help</h2>
+          <h5>Share your class notes with the world</h5>
         </div>
+      </div>
+      <h1>WELCOME TO UPLOAD </h1>
+      <form action="/upload" method="POST" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="pwd">Password</label>
-            <input type="password" class="form-control" id="pwd" name = "password">
+            <label for="usr">Description</label>
+            <input type="text" class="form-control" id="usr" name = "description">
           </div>
-          <button class="btn btn-primary" type="submit">Submit</button>
+          <div class="form-group">
+            <label for="usr">Public Filename</label>
+            <input type="text" class="form-control" id="usr" name = "filename">
+          </div>
+          <input type="file" name="file" autocomplete="off" required>
+          <input type="submit" value="Submit">
       </form>
+
+    
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>

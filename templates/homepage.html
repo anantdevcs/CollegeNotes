@@ -11,25 +11,44 @@
     <title>Hello, world!</title>
   </head>
   <body>
+      
+
     <ul class="nav justify-content-end">
         <li class="nav-item">
           <a class="nav-link active" href="/login">Login</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="signup">Signup</a>
+          <a class="nav-link" href="/signup">Signup</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#share">Share</a>
         </li>
-       
+        {%if userid%}
+        <li class="nav-item">
+            <a class="nav-link" href="/personal">{{userid}} Files</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="/upload">Uplaod Notes</a>
+          </li>
+        {%endif%}
       </ul>
-      
       <div class="card">
         <div class="card-body">
           <h2>Notes Help</h2>
           <h5>Share your class notes with the world</h5>
         </div>
       </div>
+      <ul>
+      {%for obj in feed_obj_arr%}
+      <div class="card">
+        <div class="card-body">
+          
+          <li><h6> {{obj['user_id']}} has uploaded <a href="download/{{obj['unique_filename']}}" download> {{obj['publicfilename']}}  </a>     </h6></li>
+        </div>
+      </div>
+    </ul>
+    {%endfor%}
     
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
