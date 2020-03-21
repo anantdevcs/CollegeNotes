@@ -4,6 +4,8 @@ import os
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from user import user
+from upload import  upload
 
 engine = create_engine("postgres://ukvpqsdphiottc:e796c82bf26cb08ef704ad6ed8bec02fe41a757726462727ab0ad9b6aca57c6e@ec2-52-200-119-0.compute-1.amazonaws.com:5432/d61hr65dl2k6ti")
 db = scoped_session(sessionmaker(bind=engine))
@@ -127,6 +129,34 @@ def dashboard():
         return render_template('dashboard.html',uploads = uploads)
     else:
         return render_template('login.html', error_msg = "Login to Perform Action")
+
+
+@app.route('/home')
+def home():
+    return render_template('home.html') 
+
+@app.route('/popular')
+
+def popular():
+    return render_template('popular.html')
+
+
+@app.route('/college_wise')   
+
+def college_wise():
+    return render_template('college_wise.html')
+
+@app.route('/explore', methods = ['POST', 'GET'])
+
+def explore():
+    if request.method == 'POST':
+        return render_template('explore.html')
+
+    else:
+        return render_template('explore.html')
+
+
+   
 
 if __name__ == '__main__':
 
