@@ -7,6 +7,8 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from user import user
 from upload import  upload
 
+MAX_DOWN = 5
+
 engine = create_engine("postgres://ukvpqsdphiottc:e796c82bf26cb08ef704ad6ed8bec02fe41a757726462727ab0ad9b6aca57c6e@ec2-52-200-119-0.compute-1.amazonaws.com:5432/d61hr65dl2k6ti")
 db = scoped_session(sessionmaker(bind=engine))
 
@@ -31,27 +33,50 @@ def index():
 
 def login():
     if request.method == 'GET':
-        return render_template("login.html")
+        return render_template('login.html')
     else:
         user_id = request.form['user_id']
         password = request.form['password']
-        matched = db.execute('SELECT * from users where user_id = :user and password = :password',{
-            "password":password, "user":user_id}).fetchall()
-        if len(matched) == 0:
-            return render_template('login.html', error_msg = "Incorrect username or password")
+        #Making a query
+        Q = db.execute('SELECT * from users_db where user_id = :user_id  and password = :password',
+            {'user_id':user_id, 'password':password}
+        ).fetchall()
+        if len(Q) == 0:
+            return render_template('login.html', error_message = "Wrong Username or password")
         else:
             session['user'] = user_id
-            session['college'] =  db.execute('SELECT * from users where user_id = :userid',{"userid" : user_id}).fetchall()[0]['password']
-            print(session)
+            session['college'] = Q[0]['college']
+            session['num_downloads'] = 0
+            session['num_uploads'] = 0
+            return redirect('home')
 
-            return render_template('homepage.html', userid = session['user'])
-
-
-@app.route('/signup')
+@app.route('/signup', methods = ['POST', 'GET'])
 
 def signup():
+    if request.method == 'POST':
+        #Check if this user id exists
+        user_id = request.form['user_id']
+        college = request.form['college']
+        password = request.form['password']
+        num_downloads = 0
+        num_uploads = 0
+        if len(db.execute('SELECT * from users_db WHERE user_id = :user_id',{'user_id':user_id}).fetchall()) != 0:
+            return render_template('signup.html', error_message = "This user already exists")
+    try:
+        db.execute('INSERT into users_db (user_id, college, num_downloads, num_uploads,password) values (:user_id, :college, :num_downloads, :num_uploads, :password)',
+            {"user_id":user_id, "college":college, "num_downloads":0, "num_uploads":0, "password":password}
+        )
+        db.commit()
+        session['user'] = user_id
+        session['college'] = college
+        session['num_downloads'] = 0
+        session['num_uploads'] = 0
+        return redirect('/home')
+    except:
+        return render_template('signup.html', error_message = "DB not respnding Excetion.Try after some time")
 
-    return render_template('signup.html')
+    else:
+         return render_template('signup.html')
 
 @app.route('/validate',methods=['POST'])
 
@@ -133,7 +158,15 @@ def dashboard():
 
 @app.route('/home')
 def home():
-    return render_template('home.html') 
+    if 'user' not in session:
+        return render_template('home.html')
+    else:
+        cur_user = user(user_id=session['user'],college=session['college'],num_downloads=session['num_downloads'],num_uploads=session['num_uploads'])
+        top_users = []
+        for user_dict in db.execute('SELECT * from users_db order by num_downloads desc LIMIT :MAX_DOWN',{'MAX_DOWN':MAX_DOWN}).fetchall():
+            top_users.append(user(user_id=  user_dict['user_id'],college=user_dict['college'],num_downloads= user_dict['num_downloads'],num_uploads=user_dict['num_uploads']))
+        
+        return render_template('home.html', user = cur_user, top_users = top_users )
 
 @app.route('/popular')
 
@@ -155,6 +188,12 @@ def explore():
     else:
         return render_template('explore.html')
 
+@app.route('/signout')
+
+def signout():
+    session.pop('user', None)
+    
+    return redirect('/home')
 
    
 
