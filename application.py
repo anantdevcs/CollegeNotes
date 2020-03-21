@@ -9,6 +9,7 @@ from upload import  upload
 
 MAX_DOWN = 5
 
+
 engine = create_engine("postgres://ukvpqsdphiottc:e796c82bf26cb08ef704ad6ed8bec02fe41a757726462727ab0ad9b6aca57c6e@ec2-52-200-119-0.compute-1.amazonaws.com:5432/d61hr65dl2k6ti")
 db = scoped_session(sessionmaker(bind=engine))
 
@@ -18,6 +19,10 @@ app.secret_key = "hellothere"
 UPLOAD_FOLDER = '/uploads/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 import uuid
+# Create a directory in a known location to save files to.
+uploads_dir = os.path.join(app.instance_path, 'uploads')
+# if 'uploads' not in 
+# os.makedirs(uploads_dir)
 
 
 @app.route('/')
@@ -100,25 +105,27 @@ def validate():
 
 def upload():
     if request.method == 'POST':
+        #check if user is logged in 
+        if 'user' not in session:
+            return render_template( 'login.html' , error_message = "Login to upload files " )
         file = request.files['file']
-        filename = request.form['filename']
-        description = request.form['description']
-        unique_file_name = str(uuid.uuid4())
+        filename = file.filename
+        topic = request.form['topic']
+        unique_filename = str(uuid.uuid4())
         extention = file.filename.split('.')[-1]
-        unique_file_name += '.' + extention
-        file.save(unique_file_name )
-        db.execute('INSERT INTO filesref (user_id, unique_filename, publicfilename, description) VALUES (:user_id, :unique_filename, :publicfilename, :description) ;',
-                    {"user_id":session['user'], "unique_filename":unique_file_name , "publicfilename":filename, "description":description}   )
-        db.commit()                   
-        print("Success")
-    if "user" not in session:
-        return render_template('login.html', error_msg = "Login to Upload files")
-    else:
+        unique_filename += '.' + extention
+        file.save(os.path.join(uploads_dir, unique_filename ) )
+        db.execute('insert into file_db (unique_filename, filename, num_downloads, uploader, college) values (:unique_filename, :filename, :num_downloads, :uploader, :college) ',
+            {"unique_filename":unique_filename, "filename":filename, "num_downloads": 0, "uploader":session['user'], "college":session['college']}
+        )
 
-        # file = request.files['file']
-        # file.save(os.path.join(app.config['UPLOAD_FOLDER'], "##!!@@!!12qq"))
-        # print("Success")
-        return render_template('upload.html', userid = session['user'])
+        db.commit()                   
+        
+        return render_template('upload.html', success_message = "File Uploaded Successfully")
+    
+    else:
+        return render_template('upload.html')
+
 
   
 @app.route('/download/<filename>')
