@@ -28,7 +28,7 @@ import uuid
 @app.route('/')
 
 def index():
-    return '<h1>HMM</h1>'
+    return redirect('/home')
     # feed_obj_arr = db.execute('SELECT * from filesref order by created_at DESC').fetchmany(10)
     # if  "user" in session:
     #     return render_template('homepage.html',feed_obj_arr = feed_obj_arr,userid = session['user'])
