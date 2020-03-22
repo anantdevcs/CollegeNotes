@@ -5,7 +5,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from user import user
-from upload import  upload
+from upload import upload as upload_obj
 
 MAX_DOWN = 5
 
@@ -114,9 +114,10 @@ def upload():
         unique_filename = str(uuid.uuid4())
         extention = file.filename.split('.')[-1]
         unique_filename += '.' + extention
+        topic = request.form['topic']
         file.save(os.path.join(uploads_dir, unique_filename ) )
-        db.execute('insert into file_db (unique_filename, filename, num_downloads, uploader, college) values (:unique_filename, :filename, :num_downloads, :uploader, :college) ',
-            {"unique_filename":unique_filename, "filename":filename, "num_downloads": 0, "uploader":session['user'], "college":session['college']}
+        db.execute('insert into file_db (unique_filename, filename, num_downloads, uploader, college, topic) values (:unique_filename, :filename, :num_downloads, :uploader, :college, :topic) ',
+            {"unique_filename":unique_filename, "filename":filename, "num_downloads": 0, "uploader":session['user'], "college":session['college'], "topic":topic}
         )
 
         db.commit()                   
@@ -128,10 +129,10 @@ def upload():
 
 
   
-@app.route('/download/<filename>')
-def download(filename):
-
-    return send_file(filename,attachment_filename=filename)
+@app.route('/download/<unique_filename>/<filename>')
+def download(unique_filename, filename):
+    #file.save(os.path.join(uploads_dir, unique_filename ) )
+    return send_file(os.path.join(uploads_dir, unique_filename ),attachment_filename=filename)
 
 
 @app.route('/delete/<unique_file>')
@@ -172,8 +173,13 @@ def home():
         top_users = []
         for user_dict in db.execute('SELECT * from users_db order by num_downloads desc LIMIT :MAX_DOWN',{'MAX_DOWN':MAX_DOWN}).fetchall():
             top_users.append(user(user_id=  user_dict['user_id'],college=user_dict['college'],num_downloads= user_dict['num_downloads'],num_uploads=user_dict['num_uploads']))
-        
-        return render_template('home.html', user = cur_user, top_users = top_users )
+        recent_uploads = []
+        for upload_dict in db.execute('SELECT * from file_db order by created_at desc LIMIT :MAX_DOWN', {'MAX_DOWN':MAX_DOWN} ).fetchall():
+            recent_uploads.append(upload_obj(filename = upload_dict['filename'], num_downloads=upload_dict['num_downloads'], uploader = upload_dict['uploader'], college = upload_dict['college'] , unique_filename = upload_dict['unique_filename'] ,
+            topic = upload_dict['topic']))
+
+            
+        return render_template('home.html', user = cur_user, top_users = top_users, recent_uploads = recent_uploads )
 
 @app.route('/popular')
 
