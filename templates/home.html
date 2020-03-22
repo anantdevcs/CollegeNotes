@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<table>
+<tr>
+    <td>
+        Recent Downloads
+    </td>
+    <td>
+        Top Contributors
+    </td>
+</tr>
+<tr>    
+<td>
+<div class="uk-overflow-auto">
+    <table class="uk-table uk-table-hover uk-table-middle uk-table-divider">
+        <thead>
+            <tr>
+                <th class="uk-table-shrink">PP</th>
+                <th class="uk-table-shrink">Topic</th>
+                <th class="uk-table-expand">File</th>
+                <th class="uk-width-small"># Downloads</th>
+                <th class="uk-table-shrink uk-text-nowrap">Download</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%  for upload in recent_uploads %}
+            <tr>
+               
+                
+                <td><img class="uk-preserve-width " src="http://www.esa.int/var/esa/storage/images/esa_multimedia/images/2017/11/autumn_fireball/17255671-1-eng-GB/Autumn_fireball_node_full_image_2.jpg" width="40" alt="">{{upload.uploader}}</td>
+                <td class="uk-table-link">
+                    <a class="uk-link-reset" href="/files/upload.unique_filename">{{upload.topic}}   </a>
+                </td>
+                <td class="uk-text-truncate">{{upload.filename}}</td>
+                <td class="uk-text-nowrap">{{upload.num_downloads}}</td>
+
+                <td class="uk-text-nowrap"><a href="/download/{{upload.unique_filename}}/{{upload.filename}}"> Download </a></td>
+                
+            </tr>
+            {% endfor %}    
+            
+            
+        </tbody>
+    </table>
+</div>
+</td>
+<td>
+   
+    <table class="uk-table uk-table-middle uk-table-divider">
+        <thead>
+            <tr>
+                <th class="uk-width-small">User</th>
+                <th>Downloads</th>
+                <th>Files Uploads</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in top_users     %}
+            <tr>
+                <td><img class="uk-preserve-width " src="http://www.esa.int/var/esa/storage/images/esa_multimedia/images/2017/11/autumn_fireball/17255671-1-eng-GB/Autumn_fireball_node_full_image_2.jpg" width="40" alt="">{{user.user_id}}</td>
+                <td>{{user.num_downloads}}</td>
+                <td>{{user.num_uploads}}</td>
+                
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</td>
+</tr>
+</table>
+
+{% endblock  %}
+
+
+<!-- uploads  = [] -->

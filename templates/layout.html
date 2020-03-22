@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>NotesShare</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- UIkit CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.3.7/dist/css/uikit.min.css" />
+
+        <!-- UIkit JS -->
+        <script src="https://cdn.jsdelivr.net/npm/uikit@3.3.7/dist/js/uikit.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/uikit@3.3.7/dist/js/uikit-icons.min.js"></script>
+    </head>
+    <body>
+        <div class="uk-section-primary uk-preserve-color">
+
+            <div uk-sticky="animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent uk-light; top: 200">
+        
+                <nav class="uk-navbar-container">
+                    <div class="uk-container uk-container-expand">
+                        <div uk-navbar>
+        
+                            <ul class="uk-navbar-nav">
+                                <li class="uk-active"><a href="/home">&#9924;NotesPro</a></li>
+                                <li>
+                                    <a href="/view_uploads">View Uploads</a>
+                                    <div class="uk-navbar-dropdown">
+                                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                                            <li class="uk-active"><a href="/explore">Explore</a></li>
+                                            
+                                            <li><a href="/popular">Popular Uploads</a></li>
+                                            <li><a href="/college_wise">College Wise Uploads</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/upload">upload Notes</a>
+                                </li>
+                                {%if user %}
+                                <li><a href="/dashboard">{{user.user_id}}</a></li>
+                                <li><a href="/signout">signout</a></li>
+                                
+                                {%else%}
+                                <li><a href="/login">Login</a></li>
+                                <li><a href="/signup">Signup</a></li>
+                                {%endif%}
+                            </ul>
+        
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            
+        
+            
+        </div>
+        {% block content %}
+
+            {% endblock %}
+    </body>
+</html>
+<!-- 
+class user{
+    user_id
+    
+}
+class upload{
+    user_id
+    user_id_icon_filename
+    description
+    file_name
+    unique_filename
+    num_downloads
+} -->

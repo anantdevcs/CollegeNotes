@@ -28,11 +28,12 @@ import uuid
 @app.route('/')
 
 def index():
-    feed_obj_arr = db.execute('SELECT * from filesref order by created_at DESC').fetchmany(10)
-    if  "user" in session:
-        return render_template('homepage.html',feed_obj_arr = feed_obj_arr,userid = session['user'])
-    else:
-        return render_template('homepage.html',feed_obj_arr = feed_obj_arr)
+    return '<h1>HMM</h1>'
+    # feed_obj_arr = db.execute('SELECT * from filesref order by created_at DESC').fetchmany(10)
+    # if  "user" in session:
+    #     return render_template('homepage.html',feed_obj_arr = feed_obj_arr,userid = session['user'])
+    # else:
+    #     return render_template('homepage.html',feed_obj_arr = feed_obj_arr)
 
 @app.route("/login",methods=['GET', 'POST'])
 

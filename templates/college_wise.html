@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+    <form class="uk-form-horizontal uk-margin-large" action="/college_wise/view_by_college" method="POST">
+
+        
+    
+        <div class="uk-margin">
+            <label class="uk-form-label" for="form-horizontal-select">Select</label>
+            <div class="uk-form-controls">
+                <select class="uk-select" id="form-horizontal-select">
+                    <option>Option 01</option>
+                    <option>Option 02</option>
+                </select>
+            </div>
+        </div>
+    
+        <center>
+        <button class="uk-button uk-button-default">Submit</button>
+        <br>
+        <a href="https://google.com" class="btn btn-primary">View Popular</a>
+        <br>
+        <a href="https://google.com" class="btn btn-primary">You College </a>
+    </center>
+    </form>
+
+
+
+
+
+
+
+{%  endblock  %}
