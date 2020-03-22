@@ -28,11 +28,7 @@ uploads_dir = os.path.join(app.instance_path, 'uploads')
 @app.route('/')
 
 def index():
-    feed_obj_arr = db.execute('SELECT * from filesref order by created_at DESC').fetchmany(10)
-    if  "user" in session:
-        return render_template('homepage.html',feed_obj_arr = feed_obj_arr,userid = session['user'])
-    else:
-        return render_template('homepage.html',feed_obj_arr = feed_obj_arr)
+    return redirect('/home')
 
 @app.route("/login",methods=['GET', 'POST'])
 
@@ -166,20 +162,21 @@ def dashboard():
 
 @app.route('/home')
 def home():
-    if 'user' not in session:
-        return render_template('home.html')
-    else:
+    cur_user = None
+    if 'user'  in session:
         cur_user = user(user_id=session['user'],college=session['college'],num_downloads=session['num_downloads'],num_uploads=session['num_uploads'])
-        top_users = []
-        for user_dict in db.execute('SELECT * from users_db order by num_downloads desc LIMIT :MAX_DOWN',{'MAX_DOWN':MAX_DOWN}).fetchall():
-            top_users.append(user(user_id=  user_dict['user_id'],college=user_dict['college'],num_downloads= user_dict['num_downloads'],num_uploads=user_dict['num_uploads']))
-        recent_uploads = []
-        for upload_dict in db.execute('SELECT * from file_db order by created_at desc LIMIT :MAX_DOWN', {'MAX_DOWN':MAX_DOWN} ).fetchall():
-            recent_uploads.append(upload_obj(filename = upload_dict['filename'], num_downloads=upload_dict['num_downloads'], uploader = upload_dict['uploader'], college = upload_dict['college'] , unique_filename = upload_dict['unique_filename'] ,
-            topic = upload_dict['topic']))
+    
+    
+    top_users = []
+    for user_dict in db.execute('SELECT * from users_db order by num_downloads desc LIMIT :MAX_DOWN',{'MAX_DOWN':MAX_DOWN}).fetchall():
+        top_users.append(user(user_id=  user_dict['user_id'],college=user_dict['college'],num_downloads= user_dict['num_downloads'],num_uploads=user_dict['num_uploads']))
+    recent_uploads = []
+    for upload_dict in db.execute('SELECT * from file_db order by created_at desc LIMIT :MAX_DOWN', {'MAX_DOWN':MAX_DOWN} ).fetchall():
+        recent_uploads.append(upload_obj(filename = upload_dict['filename'], num_downloads=upload_dict['num_downloads'], uploader = upload_dict['uploader'], college = upload_dict['college'] , unique_filename = upload_dict['unique_filename'] ,
+        topic = upload_dict['topic']))
 
-            
-        return render_template('home.html', user = cur_user, top_users = top_users, recent_uploads = recent_uploads )
+        
+    return render_template('home.html', user = cur_user, top_users = top_users, recent_uploads = recent_uploads )
 
 @app.route('/popular')
 
