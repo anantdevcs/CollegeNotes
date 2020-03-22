@@ -20,7 +20,7 @@ UPLOAD_FOLDER = '/uploads/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 import uuid
 # Create a directory in a known location to save files to.
-uploads_dir = os.path.join(app.instance_path, 'uploads')
+#uploads_dir = os.path.join(app.instance_path, 'uploads')
 # if 'uploads' not in 
 # os.makedirs(uploads_dir)
 
